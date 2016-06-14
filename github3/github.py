@@ -320,7 +320,8 @@ class GitHub(GitHubCore):
     @requires_auth
     def create_repository(self, name, description='', homepage='',
                           private=False, has_issues=True, has_wiki=True,
-                          auto_init=False, gitignore_template=''):
+                          auto_init=False, gitignore_template='',
+                          organization=None):
         """Create a repository for the authenticated user.
 
         :param str name: (required), name of the repository
@@ -335,11 +336,16 @@ class GitHub(GitHubCore):
         :param bool auto_init: (optional), auto initialize the repository
         :param str gitignore_template: (optional), name of the git template to
             use; ignored if auto_init = False.
+        :param str organization: (optional), creates repository for given organization. 
+            If organization is not set user repository will be created.             
         :returns: :class:`Repository <github3.repos.Repository>`
 
         .. warning: ``name`` should be no longer than 100 characters
         """
-        url = self._build_url('user', 'repos')
+        if organization:
+            url = self._build_url('orgs', organization, 'repos')
+        else:
+            url = self._build_url('user', 'repos')
         data = {'name': name, 'description': description,
                 'homepage': homepage, 'private': private,
                 'has_issues': has_issues, 'has_wiki': has_wiki,
